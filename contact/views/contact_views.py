@@ -1,5 +1,6 @@
 from django.http import HttpRequest, HttpResponse, Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 from contact.models import Contact
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -14,6 +15,31 @@ def index(request: HttpRequest) -> HttpResponse:
             'contacts': contacts
         }
     )
+
+def search_query(request: HttpRequest) -> HttpResponse:
+    search_value = request.GET.get('q', '').strip()
+
+    if not search_value:
+        return redirect('contact:index')
+
+    contacts = Contact.objects\
+        .filter(show=True)\
+        .filter(
+            Q(first_name__icontains=search_value) |
+            Q(last_name__icontains=search_value) |
+            Q(phone__icontains=search_value) |
+            Q(email__icontains=search_value)
+        )\
+        .order_by('-id')
+
+    return render(
+        request,
+        'contact/index.html',
+        {
+            'contacts': contacts
+        }
+    )
+
 
 def contact(request: HttpRequest, contact_id: int) -> HttpResponse:
     # single_contact = Contact.objects.filter(id=contact_id).last()
