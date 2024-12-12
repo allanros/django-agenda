@@ -10,15 +10,16 @@ class ContactAdmin(admin.ModelAdmin):
         'phone',
         'category',
         'email',
+        'show',
         'created_at',
     )
     # list_filter = ('created_at',)
     list_display_links = ('id', 'first_name',)
-    ordering = ('-created_at',)
-    search_fields = ('first_name', 'last_name', 'phone', 'email')
+    ordering = ('-id',)
+    search_fields = ('first_name', 'last_name', 'phone', 'email',)
     list_per_page = 15
     list_max_show_all = 200
-    list_editable = ('phone', )
+    list_editable = ('phone', 'show',)
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
