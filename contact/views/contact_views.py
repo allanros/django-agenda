@@ -1,4 +1,5 @@
-from django.http import HttpRequest, HttpResponse, Http404
+from django.http import HttpRequest, HttpResponse
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from contact.models import Contact
@@ -7,12 +8,16 @@ def index(request: HttpRequest) -> HttpResponse:
     contacts = Contact.objects\
         .filter(show=True)\
         .order_by('-id')
+    
+    paginator = Paginator(contacts, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
     return render(
         request,
         'contact/index.html',
         {
-            'contacts': contacts
+            'page_obj': page_obj
         }
     )
 
@@ -31,12 +36,16 @@ def search_query(request: HttpRequest) -> HttpResponse:
             Q(email__icontains=search_value)
         )\
         .order_by('-id')
+    
+    paginator = Paginator(contacts, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
     return render(
         request,
         'contact/index.html',
         {
-            'contacts': contacts
+            'page_obj': page_obj
         }
     )
 
