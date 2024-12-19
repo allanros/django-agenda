@@ -1,7 +1,6 @@
 {% extends "global/base.html" %}
 
 {% block content %}
-    <a class="table-link" href="{% url 'contact:index' %}">Voltar</a>
     <div class="single-contact">
         <h1 class="single-contact-name">
             {{ contact.first_name }} {{ contact.last_name }}
@@ -13,5 +12,25 @@
         <p><strong>Created Date:</strong> {{ contact.created_at }} </p>
         <p><strong>Description:</strong> {{ contact.description }} </p>
         <p><strong>Category:</strong> {{ contact.category.name }} </p>
+
+        {% if contact.picture %}
+            <p>
+                <img src="{{ contact.picture.url }}" alt="">
+            </p>
+        {% endif %}
+
+        <div class="contact-links">
+            <a href="{% url 'contact:update' contact.id %}" class="btn btn-link">Update</a>
+
+            <form action="{% url "contact:delete" contact.id %}" method="POST">
+                {% csrf_token %}
+                {% if confirmation == '0' %}
+                    <input type="hidden" name="confirmation" value="1">
+                    <button type="submit" class="btn btn-link btn-delete">Confirmar</button>
+                {% else %}
+                    <button type="submit" class="btn btn-link btn-delete">Delete</button>
+                {% endif %}
+            </form>
+        </div>
     </div>
 {% endblock content %}
